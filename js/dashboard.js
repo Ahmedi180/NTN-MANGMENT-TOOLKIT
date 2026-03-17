@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
   // Total records and stats
   const totalRecords = 1248;
