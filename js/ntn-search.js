@@ -45,7 +45,6 @@ function bindEvents() {
   els.closeModalBtn.addEventListener('click', closeModal);
   els.cancelModalBtn.addEventListener('click', closeModal);
   els.saveCompanyBtn.addEventListener('click', saveCompany);
-  els.excelFile.addEventListener('change', handleExcelUpload);
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.row-actions')) closeAllMenus();
@@ -65,18 +64,18 @@ function renderTable() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input type="checkbox" class="row-check" data-id="${row.id}" ${state.selectedIds.has(row.id) ? 'checked' : ''}></td>
-      <td>${escapeHtml(row.ref)}</td>
-      <td>${escapeHtml(row.company)}</td>
+      <td>${row.ref}</td>
+      <td>${row.company}</td>
       <td>
         <div class="copy-cell">
-          <span>${escapeHtml(row.ntn)}</span>
-          <button class="mini-btn copy-ntn" data-copy="${escapeAttr(row.ntn)}">Copy</button>
+          <span>${row.ntn}</span>
+          <button class="mini-btn copy-btn" data-copy="${row.ntn}">Copy</button>
         </div>
       </td>
       <td>
         <div class="copy-cell">
-          <span>${escapeHtml(row.cnic)}</span>
-          <button class="mini-btn copy-cnic" data-copy="${escapeAttr(row.cnic)}">Copy</button>
+          <span>${row.cnic}</span>
+          <button class="mini-btn copy-btn" data-copy="${row.cnic}">Copy</button>
         </div>
       </td>
       <td>
@@ -86,13 +85,13 @@ function renderTable() {
       </td>
       <td>
         <div class="row-actions">
-          <button class="icon-btn menu-toggle">⋮</button>
+          <button class="icon-btn menu-toggle" type="button">⋮</button>
           <div class="action-menu hidden">
-            <button class="expire-toggle" data-id="${row.id}">
+            <button class="expire-toggle" data-id="${row.id}" type="button">
               ${row.status === 'active' ? 'Expire' : 'Unexpire'}
             </button>
-            <button class="edit-row" data-id="${row.id}">Edit</button>
-            <button class="delete-row" data-id="${row.id}">Delete</button>
+            <button class="edit-row" data-id="${row.id}" type="button">Edit</button>
+            <button class="delete-row" data-id="${row.id}" type="button">Delete</button>
           </div>
         </div>
       </td>
@@ -105,7 +104,7 @@ function renderTable() {
 }
 
 function wireRowEvents() {
-  document.querySelectorAll('.copy-ntn, .copy-cnic').forEach((btn) => {
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
     btn.addEventListener('click', () => copyText(btn.dataset.copy, btn));
   });
 
@@ -113,9 +112,9 @@ function wireRowEvents() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const menu = btn.nextElementSibling;
-      const isHidden = menu.classList.contains('hidden');
+      const wasHidden = menu.classList.contains('hidden');
       closeAllMenus();
-      if (isHidden) menu.classList.remove('hidden');
+      if (wasHidden) menu.classList.remove('hidden');
     });
   });
 
@@ -143,11 +142,11 @@ function wireRowEvents() {
 
 function applySearch() {
   const q = els.searchBox.value.trim().toLowerCase();
-  state.filteredRows = state.rows.filter((row) => {
-    return [row.ref, row.company, row.ntn, row.cnic, row.status].some((v) =>
+  state.filteredRows = state.rows.filter((row) =>
+    [row.ref, row.company, row.ntn, row.cnic, row.status].some((v) =>
       String(v).toLowerCase().includes(q)
-    );
-  });
+    )
+  );
   renderTable();
 }
 
@@ -169,7 +168,6 @@ function syncBulkBar() {
 function bulkDelete() {
   if (!state.selectedIds.size) return;
   if (!confirm(`Delete ${state.selectedIds.size} selected record(s)?`)) return;
-
   state.rows = state.rows.filter((row) => !state.selectedIds.has(row.id));
   state.selectedIds.clear();
   applySearch();
@@ -200,6 +198,7 @@ function editRow(id) {
   els.ntnInput.value = row.ntn;
   els.cnicInput.value = row.cnic;
   els.companyModal.classList.remove('hidden');
+  closeAllMenus();
 }
 
 function openModal() {
@@ -250,76 +249,16 @@ function saveCompany() {
   applySearch();
 }
 
-function handleExcelUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-
-    const imported = json.map((row, index) => ({
-      id: Date.now() + index,
-      ref: String(row.REFF || row.REF || '').trim(),
-      company: String(row['COMPANY NAMES'] || row.COMPANY || row['COMPANY NAME'] || '').trim(),
-      cnic: String(row.CNIC || '').trim(),
-      ntn: String(row.NTN || '').trim(),
-      status: 'active'
-    })).filter((row) => row.ref || row.company || row.cnic || row.ntn);
-
-    if (!imported.length) {
-      alert('No valid rows found in Excel.');
-      return;
-    }
-
-    state.rows = imported;
-    state.selectedIds.clear();
-    els.selectAll.checked = false;
-    applySearch();
-    alert(`${imported.length} record(s) imported successfully.`);
-  };
-
-  reader.readAsArrayBuffer(file);
-  event.target.value = '';
-}
-
 function copyText(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
     const old = btn.textContent;
     btn.textContent = 'Copied';
-    setTimeout(() => btn.textContent = old, 900);
+    setTimeout(() => { btn.textContent = old; }, 900);
   });
 }
 
 function closeAllMenus() {
-  document.querySelectorAll('.action-menu').forEach((menu) => menu.classList.add('hidden'));
+  document.querySelectorAll('.action-menu').forEach((menu) => {
+    menu.classList.add('hidden');
+  });
 }
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
-
-function escapeAttr(value) {
-  return escapeHtml(value);
-}
-
-/*
-Firebase integration placeholder:
-
-1) Add Firebase SDK scripts in HTML.
-2) Replace local state.rows with Firestore fetch/save.
-3) On save/edit/delete/toggleExpire, write to Firestore.
-
-Expected fields:
-{ ref, company, ntn, cnic, status }
-
-Excel import is already ready on frontend.
-*/
