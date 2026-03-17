@@ -110,19 +110,22 @@ function processRow(row) {
 
   const match = findBestCompanyMatch(shipperCompany);
 
-  let matchedValue = "";
+  let filledValue = "";
   let source = "";
   let statusLabel = "Not Found";
+  let updatedShipperCompany = shipperCompany;
 
   if (match) {
     if (match.status === "active" && match.ntn) {
-      matchedValue = match.ntn;
+      filledValue = match.ntn;
       source = "NTN";
       statusLabel = "Filled";
+      updatedShipperCompany = `${shipperCompany} ${match.ntn}`.trim();
     } else if (match.status === "expired" && match.cnic) {
-      matchedValue = match.cnic;
+      filledValue = match.cnic;
       source = "CNIC";
       statusLabel = "Filled";
+      updatedShipperCompany = `${shipperCompany} ${match.cnic}`.trim();
     }
   }
 
@@ -130,7 +133,8 @@ function processRow(row) {
     ...row,
     trackingNumber,
     shipperCompany,
-    matchedValue,
+    updatedShipperCompany,
+    filledValue,
     source,
     statusLabel
   };
@@ -212,8 +216,7 @@ function renderResults(rows) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${escapeHtml(row.trackingNumber)}</td>
-      <td>${escapeHtml(row.shipperCompany)}</td>
-      <td>${escapeHtml(row.matchedValue || "")}</td>
+      <td>${escapeHtml(row.updatedShipperCompany || row.shipperCompany)}</td>
       <td>${row.source ? `<span class="source-pill">${escapeHtml(row.source)}</span>` : ""}</td>
       <td>
         <span class="badge ${row.statusLabel === "Filled" ? "filled" : "notfound"}">
@@ -234,25 +237,42 @@ function filterResults() {
   }
 
   const filtered = state.processedRows.filter((row) =>
-    [row.trackingNumber, row.shipperCompany, row.matchedValue, row.source, row.statusLabel]
-      .some(v => String(v || "").toLowerCase().includes(q))
+    [
+      row.trackingNumber,
+      row.updatedShipperCompany,
+      row.shipperCompany,
+      row.source,
+      row.statusLabel
+    ].some(v => String(v || "").toLowerCase().includes(q))
   );
 
   renderResults(filtered);
 }
 
-function buildExportWorkbook(processedRows, originalSheetName) {
-  const exportRows = processedRows.map((row) => ({
-    ...row,
-    "Matched Value": row.matchedValue,
-    "Match Source": row.source,
-    "Filled Status": row.statusLabel
-  }));
+function renderResults(rows) {
+  els.resultsBody.innerHTML = "";
 
-  const worksheet = XLSX.utils.json_to_sheet(exportRows);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, originalSheetName || "Updated");
-  state.exportWorkbook = workbook;
+  if (!rows.length) {
+    els.emptyState.style.display = "block";
+    return;
+  }
+
+  els.emptyState.style.display = "none";
+
+  rows.forEach((row) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(row.trackingNumber)}</td>
+      <td>${escapeHtml(row.updatedShipperCompany || row.shipperCompany)}</td>
+      <td>${row.source ? `<span class="source-pill">${escapeHtml(row.source)}</span>` : ""}</td>
+      <td>
+        <span class="badge ${row.statusLabel === "Filled" ? "filled" : "notfound"}">
+          ${escapeHtml(row.statusLabel)}
+        </span>
+      </td>
+    `;
+    els.resultsBody.appendChild(tr);
+  });
 }
 
 function downloadUpdatedExcel() {
