@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NTN Auto Update</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../css/auto-update.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">N</div>
+        <div class="brand-text">
+          <h1>NTN<br>Management</h1>
+          <p>Admin Panel</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a class="menu-item" href="../index.html">Dashboard</a>
+        <a class="menu-item" href="ntn-search.html">NTN Search</a>
+        <a class="menu-item active" href="auto-update.html">NTN Auto Update</a>
+        <a class="menu-item" href="lines-update.html">Different Lines NTN Update</a>
+        <a class="menu-item" href="#">Reports</a>
+        <a class="menu-item" href="#">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="auto-page">
+        <section class="hero-card">
+          <div>
+            <h1>NTN Auto Update</h1>
+            <p>Upload Excel and fill NTN or CNIC inside the same Shipper Company column.</p>
+          </div>
+          <div class="hero-actions">
+            <label class="btn btn-green upload-label">
+              <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden />
+              Upload Excel
+            </label>
+            <button class="btn btn-blue" id="downloadBtn" type="button" disabled>Download Updated Excel</button>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <div class="summary-card">
+            <span>Total Rows</span>
+            <strong id="totalRows">0</strong>
+          </div>
+          <div class="summary-card">
+            <span>Total Filled</span>
+            <strong class="green" id="totalFilled">0</strong>
+          </div>
+          <div class="summary-card">
+            <span>NTN Filled</span>
+            <strong class="blue-text" id="ntnFilled">0</strong>
+          </div>
+          <div class="summary-card">
+            <span>CNIC Filled</span>
+            <strong class="orange" id="cnicFilled">0</strong>
+          </div>
+          <div class="summary-card">
+            <span>Not Found</span>
+            <strong class="red" id="notFound">0</strong>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Processing Rules</h2>
+              <p>Active NTN = append NTN. Expired NTN = append CNIC. No match = keep name as it is.</p>
+            </div>
+            <div class="pill-row">
+              <span class="pill">Tracking Number first</span>
+              <span class="pill">Repeated companies supported</span>
+              <span class="pill">Same company column updated</span>
+            </div>
+          </div>
+          <p class="notice" id="notice">Upload a sheet with <strong>Tracking Number</strong> and <strong>Shipper Company</strong> columns.</p>
+        </section>
+
+        <section class="table-card">
+          <div class="table-head">
+            <h2>Live Results</h2>
+            <input type="text" id="resultsSearch" class="results-search" placeholder="Filter live results" />
+          </div>
+
+          <div class="table-wrap">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Tracking Number</th>
+                  <th>Shipper Company</th>
+                  <th>Source</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="emptyState">No processed results yet.</div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/auto-update.js"></script>
+</body>
+</html>
