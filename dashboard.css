@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --sidebar:#0b1b4c;
+  --sidebar-2:#0d235f;
+  --bg:#eef2ff;
+}
 *{box-sizing:border-box}
 
 :root{
