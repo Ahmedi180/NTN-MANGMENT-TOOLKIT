@@ -1,3 +1,13 @@
+import { db } from "./firebase-config.js";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 const state = {
   rows: [
     { id: 1, ref: '45530', company: 'JAY BROTHERS', cnic: '34603-6689825-5', ntn: '3277341-2', status: 'active' },
