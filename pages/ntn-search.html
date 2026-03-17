@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NTN Search</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../css/ntn-search.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="ntn-page">
+    <div class="page-header">
+      <div>
+        <h1>NTN Search</h1>
+        <p>Search by Company, Ref, NTN, or CNIC</p>
+      </div>
+
+      <div class="header-actions">
+        <label class="btn btn-green upload-label">
+          <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden />
+          Upload Excel
+        </label>
+        <button class="btn btn-blue" id="addCompanyBtn">Add Company</button>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <div class="search-wrap">
+        <input
+          type="text"
+          id="searchBox"
+          class="search-input"
+          placeholder="Search Company / NTN / CNIC / Ref"
+        />
+      </div>
+      <button class="btn btn-blue search-btn" id="searchBtn">Search</button>
+    </div>
+
+    <div class="bulk-bar" id="bulkBar">
+      <div>
+        <strong id="selectedCount">0</strong> selected
+      </div>
+      <button class="btn btn-red" id="bulkDeleteBtn">Delete Selected</button>
+    </div>
+
+    <div class="table-card">
+      <table class="ntn-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col"><input type="checkbox" id="selectAll" /></th>
+            <th>REF</th>
+            <th>COMPANY NAME</th>
+            <th>NTN</th>
+            <th>CNIC</th>
+            <th>STATUS</th>
+            <th class="action-col">ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="emptyState">No results found.</div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="companyModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Company</h3>
+        <button class="icon-btn" id="closeModalBtn">✕</button>
+      </div>
+      <div class="modal-grid">
+        <label>
+          <span>Ref</span>
+          <input type="text" id="refInput" />
+        </label>
+        <label>
+          <span>Company Name</span>
+          <input type="text" id="companyInput" />
+        </label>
+        <label>
+          <span>NTN</span>
+          <input type="text" id="ntnInput" />
+        </label>
+        <label>
+          <span>CNIC</span>
+          <input type="text" id="cnicInput" />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-light" id="cancelModalBtn">Cancel</button>
+        <button class="btn btn-blue" id="saveCompanyBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/ntn-search.js"></script>
+</body>
+</html>
