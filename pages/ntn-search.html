@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTN Search</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../css/ntn-search.css">
+</head>
+
+<body>
+
+<div class="ntn-container">
+
+<h1>NTN Search</h1>
+
+<div class="top-actions">
+<input type="text" id="searchBox" placeholder="Search Company / NTN / CNIC">
+<button onclick="searchData()">Search</button>
+
+<div class="right-actions">
+<button>Upload Excel</button>
+<button>Add Company</button>
+</div>
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th><input type="checkbox"></th>
+<th>Ref</th>
+<th>Company</th>
+<th>NTN</th>
+<th>CNIC</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="tableBody">
+
+<tr>
+<td><input type="checkbox"></td>
+<td>45530</td>
+<td>JAY BROTHERS</td>
+<td>
+3277341-2
+<button onclick="copyText('3277341-2')">Copy</button>
+</td>
+
+<td>
+34603-6689825-5
+<button onclick="copyText('34603-6689825-5')">Copy</button>
+</td>
+
+<td class="active">Active</td>
+
+<td>
+<div class="menu">
+<button onclick="toggleMenu(this)">⋮</button>
+<div class="dropdown">
+<button>Expire</button>
+<button>Edit</button>
+<button>Delete</button>
+</div>
+</div>
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<button class="bulkDelete">Delete Selected</button>
+
+</div>
+
+<script src="../js/ntn-search.js"></script>
+
+</body>
+</html>
